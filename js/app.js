@@ -898,6 +898,22 @@ const App = {
     this.showToast('⏰ Reminder created!');
     this.closeModal();
     this.refreshCurrentView();
+
+    // Send Telegram Notification
+    const telegramToken = '8962770150:AAG_kML245V7m_fciGGH9zOn_tNt4jhru6o';
+    const chatId = '8695357709';
+    const message = `⏰ New Reminder Added!\n\nTitle: ${title}\nDue Date: ${dueDate}\nType: ${type}`;
+    
+    fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message
+      })
+    }).catch(err => console.error("Error sending Telegram notification:", err));
   },
 
   // Fines & Attendance

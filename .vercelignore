@@ -1,0 +1,15 @@
+# Local development servers
+server.js
+server.ps1
+
+# Git & Editor
+.git
+.gitignore
+.vscode/
+.idea/
+
+# Screenshots & Temporary files
+Screenshot*.png
+*.log
+.DS_Store
+Thumbs.db

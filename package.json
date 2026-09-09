@@ -1,9 +1,10 @@
 {
-  "name": "the-reading-nook",
+  "name": "sjcem-digital-library",
   "version": "1.0.0",
-  "description": "Neobrutalist Digital Library & Dashboard",
-  "main": "server.js",
+  "description": "SJCEM Digital Library & Dashboard",
+  "private": true,
   "scripts": {
+    "build": "echo 'Build complete - static site ready'",
     "start": "node server.js",
     "dev": "node server.js"
   }

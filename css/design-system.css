@@ -1,0 +1,499 @@
+/* ==========================================================================
+   NEOBRUTALISM DESIGN SYSTEM - THE READING NOOK
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Core Color Palette */
+  --bg-canvas: #FDFBF7;
+  --bg-pattern-dot: #D5D0C3;
+  --ink-black: #0F0F0F;
+  --pure-white: #FFFFFF;
+  
+  /* Neobrutalist Accent Colors */
+  --neo-yellow: #FFE600;
+  --neo-yellow-warm: #FFD12E;
+  --neo-mint: #5EEAD4;
+  --neo-teal: #2DD4BF;
+  --neo-pink: #FF8FAB;
+  --neo-coral: #FF6B6B;
+  --neo-lavender: #C4B5FD;
+  --neo-purple: #8B5CF6;
+  --neo-sky: #70D6FF;
+  --neo-blue: #3B82F6;
+  --neo-orange: #FF9F43;
+  --neo-green: #10B981;
+  --neo-cream: #FFFDF0;
+  --neo-gray-light: #F3F3ED;
+  --neo-gray-mid: #E2DFD2;
+  --neo-gray-dark: #6B7280;
+
+  /* Structural Variables */
+  --border-thick: 3px solid var(--ink-black);
+  --border-medium: 2.5px solid var(--ink-black);
+  --border-thin: 1.5px solid var(--ink-black);
+  
+  /* Hard Drop Shadows (No blur!) */
+  --shadow-sm: 2px 2px 0px var(--ink-black);
+  --shadow-md: 4px 4px 0px var(--ink-black);
+  --shadow-lg: 6px 6px 0px var(--ink-black);
+  --shadow-xl: 8px 8px 0px var(--ink-black);
+  --shadow-hover: 6px 6px 0px var(--ink-black);
+  --shadow-active: 1px 1px 0px var(--ink-black);
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+
+  /* Typography */
+  --font-heading: 'Outfit', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-body: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Transitions */
+  --transition-fast: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* High Contrast Mode Override */
+body.high-contrast {
+  --bg-canvas: #FFFFFF;
+  --bg-pattern-dot: #000000;
+  --border-thick: 4px solid #000000;
+  --shadow-md: 6px 6px 0px #000000;
+  --neo-yellow: #FFFF00;
+  --neo-mint: #00FFCC;
+  --neo-pink: #FF007F;
+  --neo-lavender: #BF00FF;
+}
+
+/* Dark Mode Neobrutalism Override */
+body.dark-mode {
+  --bg-canvas: #18181B;
+  --bg-pattern-dot: #3F3F46;
+  --ink-black: #000000;
+  --pure-white: #27272A;
+  --neo-cream: #242427;
+  --neo-gray-light: #2E2E33;
+  --neo-gray-mid: #3F3F46;
+  color: #F4F4F5;
+}
+
+body.dyslexia-font {
+  --font-heading: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+  --font-body: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+}
+
+/* Global Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--bg-pattern-dot) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  color: var(--ink-black);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink-black);
+}
+
+h1 { font-size: clamp(1.8rem, 4vw, 2.75rem); }
+h2 { font-size: clamp(1.4rem, 2.5vw, 1.85rem); }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.05rem; }
+
+p, span, li, label {
+  font-size: 0.95rem;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   Neobrutalist Button Component
+   -------------------------------------------------------------------------- */
+.neo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.6rem 1.2rem;
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  background-color: var(--pure-white);
+  color: var(--ink-black);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.neo-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.neo-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-active);
+}
+
+.neo-btn-primary, .neo-btn-yellow {
+  background-color: var(--neo-yellow);
+}
+.neo-btn-primary:hover, .neo-btn-yellow:hover {
+  background-color: #FFDF00;
+}
+
+.neo-btn-accent, .neo-btn-mint {
+  background-color: var(--neo-mint);
+}
+.neo-btn-accent:hover, .neo-btn-mint:hover {
+  background-color: #44DEC4;
+}
+
+.neo-btn-coral {
+  background-color: var(--neo-coral);
+  color: #fff;
+}
+
+.neo-badge-coral {
+  background-color: var(--neo-coral);
+  color: #fff;
+}
+
+.neo-btn-danger {
+  background-color: var(--neo-coral);
+  color: #fff;
+}
+.neo-btn-danger:hover {
+  background-color: #FF5252;
+}
+
+.neo-btn-purple {
+  background-color: var(--neo-lavender);
+}
+.neo-btn-purple:hover {
+  background-color: #B29EFD;
+}
+
+.neo-btn-sky {
+  background-color: var(--neo-sky);
+}
+
+.neo-btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  box-shadow: var(--shadow-sm);
+  border-width: 2px;
+}
+.neo-btn-sm:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--ink-black);
+}
+.neo-btn-sm:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink-black);
+}
+
+.neo-btn-icon {
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Neobrutalist Cards & Containers
+   -------------------------------------------------------------------------- */
+.neo-card {
+  background: var(--pure-white);
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 1.25rem;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.neo-card-interactive:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: var(--border-medium);
+}
+
+.neo-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* Color themed cards */
+.neo-card-yellow { background-color: var(--neo-yellow-warm); }
+.neo-card-mint { background-color: #E6FBF7; }
+.neo-card-pink { background-color: #FFF0F4; }
+.neo-card-lavender { background-color: #F3E8FF; }
+.neo-card-sky { background-color: #F0F9FF; }
+
+/* --------------------------------------------------------------------------
+   Badges, Pills & Stickers
+   -------------------------------------------------------------------------- */
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border: var(--border-thin);
+  border-radius: var(--radius-xs);
+  box-shadow: 1.5px 1.5px 0px var(--ink-black);
+  background: var(--pure-white);
+  text-transform: uppercase;
+}
+
+.neo-badge-yellow { background-color: var(--neo-yellow); }
+.neo-badge-mint { background-color: var(--neo-mint); }
+.neo-badge-pink { background-color: var(--neo-pink); color: #fff; }
+.neo-badge-lavender { background-color: var(--neo-lavender); }
+.neo-badge-orange { background-color: var(--neo-orange); color: #fff; }
+.neo-badge-sky { background-color: var(--neo-sky); }
+.neo-badge-green { background-color: var(--neo-green); color: #fff; }
+
+/* Neo Sticker Effect */
+.neo-sticker {
+  position: absolute;
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.85rem;
+  border: var(--border-thick);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Inputs, Search, Select, Forms
+   -------------------------------------------------------------------------- */
+.neo-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.neo-input-label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.neo-input, .neo-select, .neo-textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+  background-color: var(--pure-white);
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  color: var(--ink-black);
+  outline: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.neo-input:focus, .neo-select:focus, .neo-textarea:focus {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--ink-black);
+  background-color: #FFFDF9;
+}
+
+.neo-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--pure-white);
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 0.35rem 0.75rem;
+  width: 100%;
+}
+
+.neo-search-bar input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Mac OS Window Header Bar Dot Styling
+   -------------------------------------------------------------------------- */
+.window-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.window-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-black);
+}
+
+.window-dot-red { background-color: #FF5F56; }
+.window-dot-yellow { background-color: #FFBD2E; }
+.window-dot-green { background-color: #27C93F; }
+
+/* --------------------------------------------------------------------------
+   Modal Window
+   -------------------------------------------------------------------------- */
+.neo-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 15, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.neo-modal-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.neo-modal {
+  background: var(--pure-white);
+  border: 3.5px solid var(--ink-black);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.neo-modal-backdrop.active .neo-modal {
+  transform: scale(1) translateY(0);
+}
+
+.neo-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: var(--neo-yellow);
+  border-bottom: var(--border-thick);
+}
+
+.neo-modal-body {
+  padding: 1.5rem;
+}
+
+.neo-modal-footer {
+  padding: 1rem 1.5rem;
+  background: var(--neo-gray-light);
+  border-top: var(--border-thick);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* Toast Notification */
+.neo-toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.neo-toast {
+  pointer-events: auto;
+  background: var(--neo-mint);
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes toastIn {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(120%); opacity: 0; }
+}

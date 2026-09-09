@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SJCEM Digital Library</title>
+  <meta name="description" content="A vibrant Neobrutalist digital library, student reading tracker, AI inquiry assistant, study groups, and management dashboard." />
+  
+  <!-- Neobrutalism Stylesheets -->
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- =======================================================================
+         SIDEBAR NAVIGATION (Matches image.png layout & features)
+         ======================================================================= -->
+    <aside class="sidebar" id="appSidebar">
+      <!-- Window Controls & Brand -->
+      <div class="sidebar-header">
+        <div class="window-dots">
+          <span class="window-dot window-dot-red"></span>
+          <span class="window-dot window-dot-yellow"></span>
+          <span class="window-dot window-dot-green"></span>
+        </div>
+        <div class="sidebar-brand">
+          <span style="font-size: 1.3rem;">📚</span>
+          <span>SJCEM DIGITAL LIBRARY</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="sidebar-content">
+        <!-- Main Hub -->
+        <div>
+          <div class="nav-group-title">READING HUB</div>
+          <ul class="nav-list">
+            <li>
+              <a href="#dashboard" class="nav-item active" data-view="dashboard">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="#library" class="nav-item" data-view="library">
+                <span class="nav-icon">🗃️</span>
+                <span>Digital Library</span>
+              </a>
+            </li>
+            <li>
+              <a href="#history" class="nav-item" data-view="history">
+                <span class="nav-icon">🕒</span>
+                <span>Digital History</span>
+              </a>
+            </li>
+            <li>
+              <a href="#inquiry" class="nav-item" data-view="inquiry">
+                <span class="nav-icon">🤖</span>
+                <span>Digital Inquiry</span>
+                <span class="nav-badge">AI</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Student Engagements -->
+        <div>
+          <div class="nav-group-title">STUDENT HUB</div>
+          <ul class="nav-list">
+            <li>
+              <a href="#ranking" class="nav-item" data-view="ranking">
+                <span class="nav-icon">🏆</span>
+                <span>Ranking System</span>
+              </a>
+            </li>
+            <li>
+              <a href="#studygroups" class="nav-item" data-view="studygroups">
+                <span class="nav-icon">👥</span>
+                <span>Study Groups</span>
+              </a>
+            </li>
+            <li>
+              <a href="#reminders" class="nav-item" data-view="reminders">
+                <span class="nav-icon">⏰</span>
+                <span>Reminder Tab</span>
+              </a>
+            </li>
+            <li>
+              <a href="#news" class="nav-item" data-view="news">
+                <span class="nav-icon">📢</span>
+                <span>News Section</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Admin Controls (Toggled via Admin Mode) -->
+        <div id="adminNavSection" style="display: none;">
+          <div class="nav-group-title" style="color: var(--neo-coral);">ADMIN PORTAL</div>
+          <ul class="nav-list">
+            <li>
+              <a href="#admin" class="nav-item" data-view="admin">
+                <span class="nav-icon">🛡️</span>
+                <span>Admin Console</span>
+                <span class="nav-badge" style="background: var(--neo-coral);">MANAGE</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- System & Settings -->
+        <div style="margin-top: auto;">
+          <div class="nav-group-title">PREFERENCES</div>
+          <ul class="nav-list">
+            <li>
+              <a href="#settings" class="nav-item" data-view="settings">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- User Info Footer -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-card">
+          <div class="sidebar-avatar">AS</div>
+          <div style="overflow: hidden; flex: 1;">
+            <div style="font-weight: 800; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Amit Sharma</div>
+            <span id="userRoleTag" class="neo-badge neo-badge-yellow" style="font-size: 0.6rem; padding: 1px 4px;">STUDENT</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =======================================================================
+         MAIN CONTAINER & APP HEADER
+         ======================================================================= -->
+    <main class="main-container">
+      <!-- Top Application Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="neo-btn neo-btn-sm mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+            ☰ Menu
+          </button>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="neo-badge neo-badge-mint">NEOBRUTALISM UI</span>
+            <span class="neo-badge neo-badge-lavender mono" id="liveDateBadge">SEP 2026</span>
+          </div>
+        </div>
+
+        <div class="top-bar-right">
+          <!-- Role Switcher: Student <--> Admin -->
+          <div class="role-switch-container">
+            <button class="role-switch-btn active" id="roleBtnStudent">
+              🎓 Student
+            </button>
+            <button class="role-switch-btn" id="roleBtnAdmin">
+              🛡️ Admin
+            </button>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <button class="neo-btn neo-btn-sm neo-btn-primary" onclick="App.openAddLogModal()" title="Add Reading Log">
+            <span>+</span> Log Read
+          </button>
+          <button class="neo-btn neo-btn-sm" onclick="App.switchView('reminders')" title="View Reminders">
+            <span>🔔</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Content Mount Point -->
+      <section class="main-content" id="mainContentArea">
+        <!-- Rendered by App.switchView() -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Global Modal Mount -->
+  <div class="neo-modal-backdrop" id="appModalBackdrop" onclick="if(event.target === this) App.closeModal()">
+    <div class="neo-modal" id="appModalContainer">
+      <!-- Injected via App.openModal() -->
+    </div>
+  </div>
+
+  <!-- Global Toast Notifications -->
+  <div class="neo-toast-container" id="toastContainer"></div>
+
+  <!-- JavaScript Scripts -->
+  <script src="js/data/initialData.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/components/dashboard.js"></script>
+  <script src="js/components/library.js"></script>
+  <script src="js/components/history.js"></script>
+  <script src="js/components/inquiry.js"></script>
+  <script src="js/components/ranking.js"></script>
+  <script src="js/components/studygroups.js"></script>
+  <script src="js/components/reminders.js"></script>
+  <script src="js/components/news.js"></script>
+  <script src="js/components/admin.js"></script>
+  <script src="js/components/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

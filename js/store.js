@@ -3,11 +3,10 @@
    ========================================================================== */
 
 // --- SUPABASE CONFIGURATION ---
-// Replace these with your actual Supabase project URL and Anon Key
 const supabaseUrl = 'https://iikhmctujkrpxrueijos.supabase.co';
-const supabaseKey = 'sb_secret_DG2cmyXh1NxZQOHpCGRZFg_T0e4RsjD';
+const supabaseKey = 'sb_publishable_9y1hevbiqoEtKcgzKhoU0g_OoYjPHdD';
 
-// Initialize only if the Supabase CDN script is loaded in index.html
+// Initialize only if the Supabase CDN script is loaded in index.html[cite: 2]
 const supabaseClient = typeof supabase !== 'undefined'
   ? supabase.createClient(supabaseUrl, supabaseKey)
   : null;
@@ -18,9 +17,41 @@ class AppStore {
     this.listeners = new Map();
     this.state = this.loadState();
 
-    // Initialize real-time camera tracking if Supabase is connected
+    // Initialize real-time camera tracking and fetch existing data if Supabase is connected
     if (supabaseClient) {
+      this.fetchInitialAttendance();
       this.initRealtimeAttendance();
+    }
+  }
+
+  async fetchInitialAttendance() {
+    // Fetch the 50 most recent attendance logs from Supabase
+    const { data, error } = await supabaseClient
+      .from('attendance_logs')
+      .select('*')
+      .order('in_time', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      console.error('Error fetching Supabase attendance:', error);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      // Map the database format to your UI state format
+      const formattedLogs = data.map(log => ({
+        id: log.id,
+        date: log.date,
+        checkIn: new Date(log.in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        checkOut: log.out_time ? new Date(log.out_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'In Session',
+        hours: log.duration_minutes ? (log.duration_minutes / 60).toFixed(2) : 0,
+        room: 'Main Reading Hall'
+      }));
+
+      // Overwrite the local state with the live Supabase data
+      this.state.attendanceLogs = formattedLogs;
+      this.saveState();
+      this.emit('attendanceUpdated', this.state.attendanceLogs);
     }
   }
 

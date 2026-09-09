@@ -97,14 +97,14 @@
           </ul>
         </div>
 
-        <!-- Admin Controls (Toggled via Admin Mode) -->
+        <!-- Admin Controls (Only visible after Admin Login) -->
         <div id="adminNavSection" style="display: none;">
-          <div class="nav-group-title" style="color: var(--neo-coral);">ADMIN PORTAL</div>
+          <div class="nav-group-title" style="color: var(--neo-coral);">ADMIN</div>
           <ul class="nav-list">
             <li>
               <a href="#admin" class="nav-item" data-view="admin">
                 <span class="nav-icon">🛡️</span>
-                <span>Admin Console</span>
+                <span>Admin</span>
                 <span class="nav-badge" style="background: var(--neo-coral);">MANAGE</span>
               </a>
             </li>
@@ -125,13 +125,32 @@
         </div>
       </div>
 
-      <!-- User Info Footer -->
+      <!-- User Info & Role Switcher Footer (Bottom-Left Corner) -->
       <div class="sidebar-footer">
-        <div class="sidebar-user-card">
-          <div class="sidebar-avatar">AS</div>
+        <div class="sidebar-role-header">
+          <span class="mono" style="font-size: 0.65rem; font-weight: 800; color: #4B5563; letter-spacing: 0.05em;">PORTAL ACCESS</span>
+        </div>
+        <!-- Distinct Role Options -->
+        <div class="sidebar-role-selector">
+          <button type="button" class="sidebar-role-btn role-btn-student active" id="roleBtnStudent" title="Student Profile">
+            <span class="role-btn-icon">🎓</span>
+            <span class="role-btn-text">Student</span>
+          </button>
+          <button type="button" class="sidebar-role-btn role-btn-admin" id="roleBtnAdmin" title="Administrator Login">
+            <span class="role-btn-icon">🛡️</span>
+            <span class="role-btn-text">Admin</span>
+          </button>
+        </div>
+
+        <!-- Active User Profile Card -->
+        <div class="sidebar-user-card" id="sidebarUserCard">
+          <div class="sidebar-avatar" id="sidebarUserAvatar">AS</div>
           <div style="overflow: hidden; flex: 1;">
-            <div style="font-weight: 800; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Amit Sharma</div>
-            <span id="userRoleTag" class="neo-badge neo-badge-yellow" style="font-size: 0.6rem; padding: 1px 4px;">STUDENT</span>
+            <div id="sidebarUserName" style="font-weight: 800; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Amit Sharma</div>
+            <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
+              <span id="userRoleTag" class="neo-badge neo-badge-yellow" style="font-size: 0.6rem; padding: 1px 4px;">STUDENT</span>
+              <span id="sidebarUserSub" class="mono" style="font-size: 0.62rem; color: #6B7280;">PID: EU1251042</span>
+            </div>
           </div>
         </div>
       </div>
@@ -154,16 +173,6 @@
         </div>
 
         <div class="top-bar-right">
-          <!-- Role Switcher: Student <--> Admin -->
-          <div class="role-switch-container">
-            <button class="role-switch-btn active" id="roleBtnStudent">
-              🎓 Student
-            </button>
-            <button class="role-switch-btn" id="roleBtnAdmin">
-              🛡️ Admin
-            </button>
-          </div>
-
           <!-- Quick Action Buttons -->
           <button class="neo-btn neo-btn-sm neo-btn-primary" onclick="App.openAddLogModal()" title="Add Reading Log">
             <span>+</span> Log Read
@@ -193,6 +202,7 @@
 
   <!-- JavaScript Scripts -->
   <script src="js/data/initialData.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/store.js"></script>
   <script src="js/components/dashboard.js"></script>
   <script src="js/components/library.js"></script>

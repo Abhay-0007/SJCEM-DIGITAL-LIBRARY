@@ -356,6 +356,51 @@ p, span, li, label {
   background-color: #FFFDF9;
 }
 
+/* Password Input with Reveal Eye Button */
+.neo-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.neo-password-wrapper .neo-input {
+  padding-right: 3.25rem;
+}
+
+.neo-eye-toggle-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--neo-cream);
+  border: 2px solid var(--ink-black);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  box-shadow: 1.5px 1.5px 0 var(--ink-black);
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  user-select: none;
+  line-height: 1;
+}
+
+.neo-eye-toggle-btn:hover {
+  background: var(--neo-yellow);
+  transform: translateY(-50%) translate(-1px, -1px);
+  box-shadow: 2.5px 2.5px 0 var(--ink-black);
+}
+
+.neo-eye-toggle-btn:active,
+.neo-eye-toggle-btn.active {
+  background: var(--neo-mint);
+  transform: translateY(-50%) translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink-black);
+}
+
 .neo-search-bar {
   display: flex;
   align-items: center;

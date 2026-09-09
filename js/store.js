@@ -2,11 +2,65 @@
    STATE STORE & PERSISTENCE - THE READING NOOK
    ========================================================================== */
 
+// --- SUPABASE CONFIGURATION ---
+// Replace these with your actual Supabase project URL and Anon Key
+const supabaseUrl = 'https://iikhmctujkrpxrueijos.supabase.co';
+const supabaseKey = 'sb_secret_DG2cmyXh1NxZQOHpCGRZFg_T0e4RsjD';
+
+// Initialize only if the Supabase CDN script is loaded in index.html
+const supabaseClient = typeof supabase !== 'undefined'
+  ? supabase.createClient(supabaseUrl, supabaseKey)
+  : null;
+
 class AppStore {
   constructor() {
     this.STORAGE_KEY = 'READING_NOOK_STORE_V1';
     this.listeners = new Map();
     this.state = this.loadState();
+
+    // Initialize real-time camera tracking if Supabase is connected
+    if (supabaseClient) {
+      this.initRealtimeAttendance();
+    }
+  }
+
+  initRealtimeAttendance() {
+    supabaseClient
+      .channel('public:attendance_logs')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'attendance_logs' }, payload => {
+        // A student just walked IN
+        const newLog = {
+          id: payload.new.id,
+          date: payload.new.date,
+          checkIn: new Date(payload.new.in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          checkOut: 'In Session',
+          hours: 0,
+          room: 'Main Reading Hall' // Default camera location
+        };
+        this.state.attendanceLogs.unshift(newLog);
+        this.saveState();
+        this.emit('attendanceUpdated', this.state.attendanceLogs);
+
+        // Trigger a global UI toast if the App router is available
+        if (window.App) {
+          window.App.showToast(`📍 PID: ${payload.new.student_pid} just entered the library!`);
+        }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'attendance_logs' }, payload => {
+        // A student just walked OUT
+        const logIndex = this.state.attendanceLogs.findIndex(l => l.id === payload.new.id || l.checkOut === 'In Session');
+        if (logIndex > -1) {
+          this.state.attendanceLogs[logIndex].checkOut = new Date(payload.new.out_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          this.state.attendanceLogs[logIndex].hours = (payload.new.duration_minutes / 60).toFixed(2);
+          this.saveState();
+          this.emit('attendanceUpdated', this.state.attendanceLogs);
+
+          if (window.App) {
+            window.App.showToast(`👋 PID: ${payload.new.student_pid} left. Duration: ${payload.new.duration_minutes} mins.`);
+          }
+        }
+      })
+      .subscribe();
   }
 
   loadState() {
@@ -53,6 +107,30 @@ class AppStore {
     this.emit('roleChanged', role);
   }
 
+  // Student Profile Management
+  getCurrentStudent() {
+    const saved = localStorage.getItem('SJCEM_CURRENT_STUDENT');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.pid && !parsed.pid.startsWith('EU125')) {
+          parsed.pid = 'EU125' + parsed.pid.padStart(4, '0').slice(-4);
+        }
+        return parsed;
+      } catch (e) { }
+    }
+    return {
+      pid: 'EU1251042',
+      name: 'Amit Sharma',
+      avatar: 'AS'
+    };
+  }
+
+  setCurrentStudent(studentData) {
+    localStorage.setItem('SJCEM_CURRENT_STUDENT', JSON.stringify(studentData));
+    this.emit('studentChanged', studentData);
+  }
+
   // --- Reading Goals & Stats ---
   getStats() {
     return this.state.stats;
@@ -73,7 +151,7 @@ class AppStore {
     if (book) {
       book.currentChapter = Math.min(book.totalChapters, Math.max(0, book.currentChapter + deltaChapter));
       book.progressPercent = Math.round((book.currentChapter / book.totalChapters) * 100);
-      
+
       // If completed
       if (book.currentChapter === book.totalChapters) {
         this.state.stats.booksRead = (this.state.stats.booksRead || 0) + 1;
@@ -145,7 +223,7 @@ class AppStore {
     }
     if (search && search.trim() !== '') {
       const q = search.toLowerCase();
-      list = list.filter(item => 
+      list = list.filter(item =>
         item.title.toLowerCase().includes(q) ||
         item.author.toLowerCase().includes(q) ||
         item.category.toLowerCase().includes(q)
@@ -222,7 +300,7 @@ class AppStore {
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const dateStr = now.toISOString().split('T')[0];
-    
+
     const newLog = {
       date: dateStr,
       checkIn: timeStr,

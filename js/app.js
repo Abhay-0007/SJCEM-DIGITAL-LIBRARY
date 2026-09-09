@@ -22,45 +22,78 @@ const App = {
 
     if (studentBtn) {
       studentBtn.addEventListener('click', () => {
-        store.setRole('student');
-        this.updateRoleUI();
-        this.switchView('dashboard');
-        this.showToast('👤 Switched to Student Profile');
+        this.openStudentLoginModal();
       });
     }
 
     if (adminBtn) {
       adminBtn.addEventListener('click', () => {
-        store.setRole('admin');
-        this.updateRoleUI();
-        this.switchView('admin');
-        this.showToast('🛡️ Switched to Administrator Portal');
+        const currentRole = store.getRole();
+        if (currentRole === 'admin') {
+          this.switchView('admin');
+          this.showToast('🛡️ Already logged in as Administrator');
+        } else {
+          this.openAdminLoginModal();
+        }
       });
     }
   },
 
   updateRoleUI() {
     const role = store.getRole();
+    const student = store.getCurrentStudent();
     const studentBtn = document.getElementById('roleBtnStudent');
     const adminBtn = document.getElementById('roleBtnAdmin');
     const adminNavSection = document.getElementById('adminNavSection');
     const userRoleTag = document.getElementById('userRoleTag');
+    const userCard = document.getElementById('sidebarUserCard');
+    const userAvatar = document.getElementById('sidebarUserAvatar');
+    const userName = document.getElementById('sidebarUserName');
+    const userSub = document.getElementById('sidebarUserSub');
 
     if (role === 'admin') {
       studentBtn?.classList.remove('active');
-      adminBtn?.classList.add('active', 'admin-active');
+      adminBtn?.classList.add('active');
       if (adminNavSection) adminNavSection.style.display = 'block';
       if (userRoleTag) {
         userRoleTag.textContent = 'ADMINISTRATOR';
         userRoleTag.className = 'neo-badge neo-badge-pink';
       }
+      if (userCard) {
+        userCard.classList.add('admin-mode-card');
+      }
+      if (userAvatar) {
+        userAvatar.textContent = '🛡️';
+        userAvatar.style.background = 'var(--neo-coral)';
+        userAvatar.style.color = '#ffffff';
+      }
+      if (userName) {
+        userName.textContent = 'Dr. E. Hawthorne';
+      }
+      if (userSub) {
+        userSub.textContent = 'STAFF ID: AD-01';
+      }
     } else {
       studentBtn?.classList.add('active');
-      adminBtn?.classList.remove('active', 'admin-active');
+      adminBtn?.classList.remove('active');
       if (adminNavSection) adminNavSection.style.display = 'none';
       if (userRoleTag) {
         userRoleTag.textContent = 'STUDENT';
         userRoleTag.className = 'neo-badge neo-badge-yellow';
+      }
+      if (userCard) {
+        userCard.classList.remove('admin-mode-card');
+      }
+      if (userAvatar) {
+        userAvatar.textContent = student.avatar || 'AS';
+        userAvatar.style.background = 'var(--neo-mint)';
+        userAvatar.style.color = 'var(--ink-black)';
+      }
+      if (userName) {
+        userName.textContent = student.name || 'Amit Sharma';
+      }
+      if (userSub) {
+        userSub.textContent = `PID: ${student.pid || '1042'}`;
       }
     }
   },
@@ -98,6 +131,12 @@ const App = {
   },
 
   switchView(viewName) {
+    if (viewName === 'admin' && store.getRole() !== 'admin') {
+      this.openAdminLoginModal();
+      this.showToast('🛡️ Admin login required to access Admin section');
+      return;
+    }
+
     this.currentView = viewName;
 
     // Update active state in sidebar
@@ -378,6 +417,281 @@ const App = {
     this.showToast('🎯 Reading target updated!');
     this.closeModal();
     this.refreshCurrentView();
+  },
+
+  openStudentLoginModal() {
+    const student = store.getCurrentStudent();
+    this.openModal(`
+      <div class="neo-modal-header" style="background: var(--neo-yellow); color: var(--ink-black);">
+        <div class="window-dots">
+          <span class="window-dot window-dot-red"></span>
+          <span class="window-dot window-dot-yellow"></span>
+          <span class="window-dot window-dot-green"></span>
+        </div>
+        <h3 style="margin: 0 1rem;">🎓 Student Portal Authentication</h3>
+        <button class="neo-btn neo-btn-sm" onclick="App.closeModal()">✕</button>
+      </div>
+      <form onsubmit="App.handleStudentLogin(event)">
+        <div class="neo-modal-body">
+          <div style="background: #FFFBEB; border: 2px solid var(--ink-black); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 2px 2px 0 var(--ink-black);">
+            <span style="font-size: 1.6rem;">🎓</span>
+            <div style="font-size: 0.82rem; line-height: 1.4;">
+              <strong>SJCEM Student Digital Library Portal</strong><br/>
+              Enter your unique student <strong>PID</strong> (starts with <code>EU125</code> + 4 digits) and password.
+            </div>
+          </div>
+
+          <div class="neo-input-group">
+            <label class="neo-input-label">Student PID (Permanent ID)</label>
+            <input type="text" id="studentPidInput" class="neo-input uppercase mono" placeholder="e.g. EU1251042" value="${student.pid || 'EU1251042'}" required autofocus />
+            <span class="mono" style="font-size: 0.72rem; color: #6B7280; margin-top: 4px; display: block;">Format: <strong>EU125</strong> + 4 unique digits (Default: <strong>EU1251042</strong> - Amit Sharma)</span>
+          </div>
+
+          <div class="neo-input-group">
+            <label class="neo-input-label">Student Password</label>
+            <div class="neo-password-wrapper" id="studentPasswordWrapper">
+              <input type="password" id="studentPasswordInput" class="neo-input" placeholder="Enter student password..." value="sjcem123" required />
+              <button type="button" id="togglePasswordEyeBtn" class="neo-eye-toggle-btn" title="Hover or press to view password" aria-label="Toggle password visibility">
+                <span id="passwordEyeIcon">👁️</span>
+              </button>
+            </div>
+            <div style="margin-top: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+              <span class="mono" style="font-size: 0.72rem; color: #6B7280;">Demo Password: <strong>sjcem123</strong></span>
+              <button type="button" class="neo-btn neo-btn-sm" style="padding: 3px 8px; font-size: 0.72rem; background: var(--neo-mint);" onclick="App.quickStudentLogin()">
+                ⚡ One-Click Login
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="neo-btn" onclick="App.closeModal()">Cancel</button>
+          <button type="submit" class="neo-btn neo-btn-primary">
+            🎓 Verify & Sign In
+          </button>
+        </div>
+      </form>
+    `);
+
+    // Attach hover & cursor-removal listeners for password reveal
+    this.setupPasswordEyeToggleFor('studentPasswordInput', 'togglePasswordEyeBtn', 'passwordEyeIcon', 'studentPasswordWrapper');
+  },
+
+  setupPasswordEyeToggleFor(inputId, eyeBtnId, iconId, wrapperId) {
+    const pwdInput = document.getElementById(inputId);
+    const eyeBtn = document.getElementById(eyeBtnId);
+    const eyeIcon = document.getElementById(iconId);
+    const wrapper = document.getElementById(wrapperId);
+
+    if (!pwdInput || !eyeBtn) return;
+
+    const show = () => {
+      pwdInput.type = 'text';
+      if (eyeIcon) eyeIcon.textContent = '👁️‍🗨️';
+      eyeBtn.classList.add('active');
+    };
+
+    const hide = () => {
+      pwdInput.type = 'password';
+      if (eyeIcon) eyeIcon.textContent = '👁️';
+      eyeBtn.classList.remove('active');
+    };
+
+    // When cursor hovers over or presses the eye button, reveal password
+    eyeBtn.addEventListener('mouseenter', show);
+    // When cursor is removed, password immediately turns back to dots (••••)
+    eyeBtn.addEventListener('mouseleave', hide);
+
+    // Mouse press & release support
+    eyeBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      show();
+    });
+    eyeBtn.addEventListener('mouseup', hide);
+
+    // Click toggle
+    eyeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (pwdInput.type === 'password') {
+        show();
+      } else {
+        hide();
+      }
+    });
+
+    // When cursor leaves the entire password wrapper or input loses focus, always turn back to dots
+    if (wrapper) {
+      wrapper.addEventListener('mouseleave', hide);
+    }
+    pwdInput.addEventListener('blur', hide);
+  },
+
+  handleStudentLogin(e) {
+    e.preventDefault();
+    let pid = document.getElementById('studentPidInput')?.value?.trim().toUpperCase();
+    const password = document.getElementById('studentPasswordInput')?.value?.trim();
+
+    if (!pid) {
+      this.showToast('⚠️ Please enter your Student PID.');
+      return;
+    }
+
+    // Auto-prefix EU125 if user entered 4 digits
+    if (/^\d{4}$/.test(pid)) {
+      pid = 'EU125' + pid;
+    }
+
+    if (!/^EU125\d{4}$/.test(pid)) {
+      this.showToast('⚠️ PID must start with EU125 followed by 4 digits (e.g. EU1251042)');
+      return;
+    }
+
+    if (!password) {
+      this.showToast('⚠️ Please enter your student password.');
+      return;
+    }
+
+    // Determine student name/initials based on PID
+    let studentName = 'Amit Sharma';
+    let avatar = 'AS';
+
+    if (pid === 'EU1251042') {
+      studentName = 'Amit Sharma';
+      avatar = 'AS';
+    } else if (pid === 'EU1251088') {
+      studentName = 'Priya Patel';
+      avatar = 'PP';
+    } else if (pid === 'EU1252045') {
+      studentName = 'Elena Rostova';
+      avatar = 'ER';
+    } else if (pid === 'EU1253012') {
+      studentName = 'Kenji Sato';
+      avatar = 'KS';
+    } else if (pid === 'EU1254091') {
+      studentName = 'Sophia Chen';
+      avatar = 'SC';
+    } else {
+      const suffix = pid.slice(-4);
+      studentName = `Student ${suffix}`;
+      avatar = 'S' + suffix.charAt(0);
+    }
+
+    store.setCurrentStudent({ pid, name: studentName, avatar });
+    store.setRole('student');
+    this.updateRoleUI();
+    this.closeModal();
+
+    if (this.currentView === 'admin') {
+      this.switchView('dashboard');
+    } else {
+      this.refreshCurrentView();
+    }
+
+    this.showToast(`🎓 Welcome back, ${studentName} (PID: ${pid})`);
+  },
+
+  quickStudentLogin() {
+    store.setCurrentStudent({ pid: 'EU1251042', name: 'Amit Sharma', avatar: 'AS' });
+    store.setRole('student');
+    this.updateRoleUI();
+    this.closeModal();
+
+    if (this.currentView === 'admin') {
+      this.switchView('dashboard');
+    } else {
+      this.refreshCurrentView();
+    }
+
+    this.showToast('🎓 Welcome back, Amit Sharma (PID: EU1251042)');
+  },
+
+  openAdminLoginModal() {
+    this.openModal(`
+      <div class="neo-modal-header" style="background: var(--neo-coral); color: #fff;">
+        <div class="window-dots">
+          <span class="window-dot window-dot-red"></span>
+          <span class="window-dot window-dot-yellow"></span>
+          <span class="window-dot window-dot-green"></span>
+        </div>
+        <h3 style="margin: 0 1rem; color: #fff;">🛡️ Administrator Authentication</h3>
+        <button class="neo-btn neo-btn-sm" onclick="App.closeModal()">✕</button>
+      </div>
+      <form onsubmit="App.handleAdminLogin(event)">
+        <div class="neo-modal-body">
+          <div style="background: #FFF1F2; border: 2px solid var(--ink-black); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 2px 2px 0 var(--ink-black);">
+            <span style="font-size: 1.6rem;">🔐</span>
+            <div style="font-size: 0.82rem; line-height: 1.4;">
+              <strong>Privileged Staff Access Required</strong><br/>
+              Log in to access Catalog Management, Overdue Loans, and Attendance Monitoring.
+            </div>
+          </div>
+
+          <div class="neo-input-group">
+            <label class="neo-input-label">Admin PID (Staff ID)</label>
+            <input type="text" id="adminPidInput" class="neo-input uppercase mono" placeholder="e.g. AD-01" value="AD-01" required autofocus />
+            <span class="mono" style="font-size: 0.72rem; color: #6B7280; margin-top: 4px; display: block;">Default Admin PID: <strong>AD-01</strong> (Dr. E. Hawthorne)</span>
+          </div>
+
+          <div class="neo-input-group">
+            <label class="neo-input-label">Admin Password</label>
+            <div class="neo-password-wrapper" id="adminPasswordWrapper">
+              <input type="password" id="adminPasswordInput" class="neo-input" placeholder="Enter admin password..." value="admin123" required />
+              <button type="button" id="toggleAdminEyeBtn" class="neo-eye-toggle-btn" title="Hover or press to view password" aria-label="Toggle password visibility">
+                <span id="adminEyeIcon">👁️</span>
+              </button>
+            </div>
+            <div style="margin-top: 0.5rem; display: flex; align-items: center; justify-content: space-between;">
+              <span class="mono" style="font-size: 0.72rem; color: #6B7280;">Demo Password: <strong>admin123</strong></span>
+              <button type="button" class="neo-btn neo-btn-sm" style="padding: 3px 8px; font-size: 0.72rem; background: var(--neo-yellow);" onclick="App.quickAdminLogin()">
+                ⚡ One-Click Login
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="neo-btn" onclick="App.closeModal()">Cancel</button>
+          <button type="submit" class="neo-btn neo-btn-accent" style="background: var(--neo-coral); color: #fff;">
+            🛡️ Authorize & Enter
+          </button>
+        </div>
+      </form>
+    `);
+
+    // Attach hover & cursor-removal listeners for admin password reveal
+    this.setupPasswordEyeToggleFor('adminPasswordInput', 'toggleAdminEyeBtn', 'adminEyeIcon', 'adminPasswordWrapper');
+  },
+
+  handleAdminLogin(e) {
+    e.preventDefault();
+    const pid = document.getElementById('adminPidInput')?.value?.trim().toUpperCase();
+    const password = document.getElementById('adminPasswordInput')?.value?.trim();
+
+    if (!pid) {
+      this.showToast('⚠️ Please enter your Admin PID.');
+      return;
+    }
+
+    if (!password) {
+      this.showToast('⚠️ Please enter your admin password.');
+      return;
+    }
+
+    if (password === 'admin123' || password === 'admin' || password === 'sjcem123') {
+      store.setRole('admin');
+      this.updateRoleUI();
+      this.closeModal();
+      this.switchView('admin');
+      this.showToast(`🛡️ Welcome, Dr. Hawthorne (Staff PID: ${pid})`);
+    } else {
+      this.showToast('⚠️ Invalid Admin Password! (Try: admin123 or One-Click Login)');
+    }
+  },
+
+  quickAdminLogin() {
+    store.setRole('admin');
+    this.updateRoleUI();
+    this.closeModal();
+    this.switchView('admin');
+    this.showToast('🛡️ Welcome, Dr. Hawthorne (Staff PID: AD-01)');
   },
 
   openCertificateModal() {
